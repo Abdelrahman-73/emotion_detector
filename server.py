@@ -2,7 +2,7 @@
 
 from flask import Flask, jsonify, render_template, request
 
-from .emotion_detection import emotion_detector
+from EmotionDetection import emotion_detector
 
 
 app = Flask(__name__)

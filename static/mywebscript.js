@@ -3,8 +3,24 @@ let RunSentimentAnalysis = ()=>{
 
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            document.getElementById("system_response").innerHTML = xhttp.responseText;
+        if (this.readyState !== 4) {
+            return;
+        }
+
+        const responseElement = document.getElementById("system_response");
+        let responseData;
+        try {
+            responseData = JSON.parse(this.responseText);
+        } catch (error) {
+            responseElement.textContent = `Request failed (${this.status}).`;
+            return;
+        }
+
+        if (this.status === 200) {
+            responseElement.textContent = JSON.stringify(responseData, null, 2);
+        } else {
+            responseElement.textContent =
+                responseData.error || `Request failed (${this.status}).`;
         }
     };
     xhttp.open(

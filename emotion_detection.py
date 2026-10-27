@@ -26,6 +26,16 @@ def emotion_detector(text_to_analyze):
     except requests.exceptions.RequestException as exc:
         raise RuntimeError("Could not connect to the emotion API.") from exc
 
+    if response.status_code == 400:
+        return {
+            "joy": None,
+            "anger": None,
+            "sadness": None,
+            "fear": None,
+            "disgust": None,
+            "dominant_emotion": None,
+        }
+
     if response.status_code != 200:
         raise RuntimeError(f"Emotion API returned status {response.status_code}.")
 
