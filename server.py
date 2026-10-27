@@ -1,33 +1,41 @@
 """Flask web application for emotion detection."""
 
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, render_template, request
 
-from EmotionDetection import emotion_detector
-
-
-app = Flask(__name__)
+from EmotionDetection.emotion_detection import emotion_detector
 
 
-@app.get("/")
-def home():
+app = Flask("Emotion Detector")
+
+
+@app.route("/emotionDetector")
+def emotion_detector_function():
+    """Return formatted emotion scores or an invalid-input message."""
+    text_to_analyze = request.args.get("textToAnalyze", "")
+    try:
+        result = emotion_detector(text_to_analyze)
+    except RuntimeError as exc:
+        return str(exc), 502
+
+    if result["dominant_emotion"] is None:
+        return "Invalid text! Please try again!", 400
+
+    return (
+        "For the given statement, the system response is "
+        f"'anger': {result['anger']}, "
+        f"'disgust': {result['disgust']}, "
+        f"'fear': {result['fear']}, "
+        f"'joy': {result['joy']}, "
+        f"'sadness': {result['sadness']}. "
+        f"The dominant emotion is {result['dominant_emotion']}."
+    )
+
+
+@app.route("/")
+def render_index_page():
     """Render the application's home page."""
     return render_template("index.html")
 
 
-@app.get("/emotionDetector")
-def detect_emotion():
-    """Analyze submitted text and return emotion scores as JSON."""
-    text_to_analyze = request.args.get("textToAnalyze", "")
-
-    try:
-        result = emotion_detector(text_to_analyze)
-    except ValueError as exc:
-        return jsonify({"error": str(exc)}), 400
-    except RuntimeError as exc:
-        return jsonify({"error": str(exc)}), 502
-
-    return jsonify(result)
-
-
 if __name__ == "__main__":
-    app.run()
+    app.run(host="0.0.0.0", port=5000)

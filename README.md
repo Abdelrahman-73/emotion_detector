@@ -11,8 +11,8 @@ py server.py
 ```
 
 Then open <http://127.0.0.1:5000/> in a browser. The home page serves the
-interface, and `/emotionDetector?textToAnalyze=...` returns the emotion
-scores as JSON.
+interface, and `/emotionDetector?textToAnalyze=...` returns a formatted
+emotion summary. Blank input displays `Invalid text! Please try again!`.
 
 The application requires Flask and requests. If they are not installed, run:
 

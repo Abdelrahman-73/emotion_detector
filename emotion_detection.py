@@ -9,12 +9,20 @@ API_URL = (
 )
 MODEL_ID = "emotion_aggregated-workflow_lang_en_stock"
 EMOTIONS = ("joy", "anger", "sadness", "fear", "disgust")
+EMPTY_RESULT = {
+    "joy": None,
+    "anger": None,
+    "sadness": None,
+    "fear": None,
+    "disgust": None,
+    "dominant_emotion": None,
+}
 
 
 def emotion_detector(text_to_analyze):
     """Send text to the emotion API and format its emotion scores."""
     if text_to_analyze is None or not str(text_to_analyze).strip():
-        raise ValueError("Please enter text to analyze.")
+        return EMPTY_RESULT.copy()
 
     try:
         response = requests.post(
@@ -27,14 +35,7 @@ def emotion_detector(text_to_analyze):
         raise RuntimeError("Could not connect to the emotion API.") from exc
 
     if response.status_code == 400:
-        return {
-            "joy": None,
-            "anger": None,
-            "sadness": None,
-            "fear": None,
-            "disgust": None,
-            "dominant_emotion": None,
-        }
+        return EMPTY_RESULT.copy()
 
     if response.status_code != 200:
         raise RuntimeError(f"Emotion API returned status {response.status_code}.")
